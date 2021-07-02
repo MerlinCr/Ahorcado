@@ -1,0 +1,162 @@
+
+import os   #-> Se usa para ejecutar comando de sistema CLS
+import random
+# 
+# Crear Diccionario con las palabras de 6 o mas caracteres y que no se repitan
+# Generar al Azar numero de la palabra contenida en el diccionario 
+# Muestra con guiones la cantidad de caracteres que tiene la palabra a adivinar
+# La letra digitada se coloca las veces que aparezca bajo cada guion
+# En caso de digitar uan letra que ya eligio no pasa nada, solo mensaje "Ya usó esa letra !"
+# 
+# 
+# Lee el contenido del 
+
+def Tiene_Tilde(Arma_Palabra):
+    Tildes="áéíóú"
+    Tildes=Tildes.upper()
+    Arma_Palabra=Arma_Palabra.upper()
+    for i in range(0,4):
+        for j in range(0,len(Arma_Palabra)):
+            
+            if Tildes[i] == Arma_Palabra[j]:
+                return(True)
+    return(False)    
+    
+Archivo = os.path.abspath("AHORCADO.txt")
+
+# En caso de no existir el archivo es creado con un juego de 8 palabras básicas. 
+if not os.path.isfile(Archivo):
+   print("Archivo",Archivo,"No Existe !, lo vamos a crear...")
+   file = open(Archivo, "w")
+   Palabras={1:"Autobus", 2:"Sagitario", 3:"Murcielago", 4:"Zoologico",
+             5:"Serpiente", 6:"Submarino", 7:"Motocicleta", 8:"Cochinilla"}
+   for i in range(1,8):
+       file.write(Palabras[i]+ os.linesep)
+   file.close()
+f = open(Archivo, "r") 
+dato = f.read()
+f.close()
+
+# Filtrar Palabras de 6 o mas caracteres y que sean sin tilde.
+Palabras={}
+Cuenta_Palabras=0
+if dato[0] != " ":
+    Arma_Palabra=dato[0]
+else:       
+    Arma_Palabra=""
+
+caracteres_leidos=0
+
+Signos_de_Puntuacion=(".;:,() 0123456789")
+os.system("cls")
+print("""Practica de PYTHON:
+       Este programa lee un archivo llamado AHORCADO.txt, es tipo texto ubicado en la carpeta de trabajo, en caso de
+       no existir será creado conteniendo un juego de palabras basicas para adivinar, el contenido de este Archivo
+       puede cambiarse abriendolo con algún block de notas o cualquier otro programa y pegar cualquier otro texto.
+       Esta desarrollado para WINDOWS 10, no sé como funcionará en LINUX")""")
+input()
+while caracteres_leidos <len(dato):
+    
+    caracteres_leidos+=1
+    if caracteres_leidos >= len(dato):
+        break
+
+    if dato[caracteres_leidos] not in Signos_de_Puntuacion:
+       
+        
+        while True:
+           Arma_Palabra+=dato[caracteres_leidos]
+           caracteres_leidos+=1
+           if caracteres_leidos >= len(dato) or dato[caracteres_leidos] in Signos_de_Puntuacion:
+                break
+        if len(Arma_Palabra) > 5:
+            # Buscar la palabra en el diccionario, si no esta se agrega
+
+            Palabra_no_Existe=True
+            if Cuenta_Palabras>0:
+                Fin_de_For=Cuenta_Palabras
+            
+                for i in range(1,Fin_de_For):
+
+                    if Palabras[i]==Arma_Palabra or Tiene_Tilde(Arma_Palabra):
+                        Palabra_no_Existe=False
+                        Fin_de_For=i
+
+            if Palabra_no_Existe:
+                
+                Cuenta_Palabras+=1
+                Palabras[Cuenta_Palabras]=Arma_Palabra
+                
+           
+        Arma_Palabra=""
+
+Errores={1:"Soporte Base de la Horca Armado !(1)", 2:"Soporte Vertical de la Horca Armado !(2)",
+         3:"Soporte Superior Para La Cuerda Armado !(3)", 4:"Cuerda Lista !(4)", 
+         5:"Cabeza dentro del lazo !(5)", 6:"Tronco Dibujado !(6)",
+         7:"Brazos Dibujados !(7)", 8:"Piernas Dibujadas !(8)"}
+         
+ABC="ABCDEFGHIJKLMNOPQRSTUVWXYZÑ"          
+
+while True:
+    
+    Palabra_a_Adivinar=random.randint(1, Cuenta_Palabras)
+    Palabra0=Palabras[Palabra_a_Adivinar].upper()
+    Palabra=[]
+    for i in range(0,len(Palabra0)):
+        Palabra.append(Palabra0[i:i+1])
+    
+
+    
+    print("Tienes derecho a 8 intentos fallidos !, Palabra fué seleccionada entre {} palabras y es de {} letras.".format(Cuenta_Palabras,len(Palabra0)))
+    
+    Palabra_Adivinada=[]
+    for i in range(0,len(Palabra)):
+        Palabra_Adivinada.append("-")
+    
+    Letras_Usadas_Ok=""
+    Letras_Usadas_Ml=""
+    intentos=0
+    while True:
+        
+        if len(Letras_Usadas_Ok)+len(Letras_Usadas_Ml) > 0:
+            print("Letras Usadas {}".format("Correctas: "+Letras_Usadas_Ok+"/Incorrectas: "+Letras_Usadas_Ml))
+
+        
+        Ver_Palabra_Adivinada=""
+        for i in range(0,len(Palabra_Adivinada)):
+            Ver_Palabra_Adivinada=Ver_Palabra_Adivinada+Palabra_Adivinada[i]
+        print(Ver_Palabra_Adivinada)    
+        Letra=input("Dame una letra de la A a la Z:")
+        Letra=Letra.upper()
+            # Validar que lo digitado sea una letra entre A y Z
+        if Letra in ABC and len(Letra) > 0: # Comprueba si lo digitado es valido (Letras de la A a la Z)
+                
+            if Letra in Letras_Usadas_Ok or Letra in Letras_Usadas_Ml:
+                   print("La letra {} ya fué usada, no pasa nada. Intente con otra !".format(Letra))
+                   continue
+            if Letra in Palabra:
+                Letras_Usadas_Ok=Letras_Usadas_Ok+Letra       
+                for j in range(0,len(Palabra)):
+                    if Letra==Palabra[j]:
+                        Palabra_Adivinada[j]=Letra
+                if "-" not in Palabra_Adivinada:
+                    print("G A N A D O R  !  !  !")
+                    break
+            else:
+                intentos+=1 
+                print("LO siento, la Letra {} NO esta !, Error {} de 8".format(Letra,intentos))
+                
+                for j in range(1,intentos+1):
+                    print(Errores[j])  
+                Letras_Usadas_Ml=Letras_Usadas_Ml+Letra  
+                if intentos == 8: 
+                   print("P E R D E D O R  !  !  !, usted llego hasta",Ver_Palabra_Adivinada)
+                   break 
+        else:
+            print("{} No está dentro de los caracteres permitidos !{}".format(Letra,ABC))    
+ 
+    print("La palabra era",Palabra0)          
+    SN=input("Terminar ? S/N ")
+    if SN.upper()=="S":
+        break
+    os.system("cls") 
